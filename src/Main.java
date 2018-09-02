@@ -1,3 +1,4 @@
+import entities.BaseClass;
 import entities.NozzleMeasure;
 import entities.Refuel;
 import entities.TankMeasure;
@@ -21,11 +22,9 @@ public class Main {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
 
             List<NozzleMeasure> nozzleMeasures;
-            NozzleMeasure singleNozzleMeasure;
             List<TankMeasure> tankMeasures;
-            TankMeasure singleTankMeasure;
             List<Refuel> refuelList;
-            Refuel singleRefuel;
+            List<BaseClass> genericList;
 
             String dataHeader;
 
@@ -41,41 +40,37 @@ public class Main {
                 for (;;) {
                     try {
                         dataHeader = (String)fromClient.readObject();
-
+                        genericList = new ArrayList<>();
                         switch (dataHeader){
-
                             case "tankMeasure":
                                 System.out.println("receiving tank measures...");
-                                tankMeasures  = new ArrayList<>();
-                                singleTankMeasure = null;
                                 tankMeasures= (ArrayList<TankMeasure>)fromClient.readObject();
-                                singleTankMeasure = tankMeasures.get(0);
-                                System.out.println(singleTankMeasure.getMeasureDate());
-                                DataGrouper dataGrouper = new DataGrouper();
-                                TankMeasure[] groupedBlock = dataGrouper.createGroupedDataBlockTankMeasures(tankMeasures);
-                                MaskModule maskModule = new MaskModule();
-                                maskModule.getDividedDataBlock(new ArrayList<>(Arrays.asList(groupedBlock)));
-
+                                for(TankMeasure tankMeasure: tankMeasures){
+                                    genericList.add((BaseClass) tankMeasure);
+                                }
                                 break;
 
                             case "refuel":
                                 System.out.println("receiving refuel data...");
-                                refuelList = new ArrayList<>();
-                                singleRefuel = null;
                                 refuelList= (ArrayList<Refuel>)fromClient.readObject();
-                                singleRefuel = refuelList.get(0);
-                                System.out.println(singleRefuel.getMeasureDate());
+                                for(Refuel refuel: refuelList){
+                                    genericList.add((BaseClass)refuel);
+                                }
                                 break;
 
                             case "nozzleMeasure":
                                 System.out.println("receiving nozzle measures...");
-                                nozzleMeasures  = new ArrayList<>();
-                                singleNozzleMeasure = null;
                                 nozzleMeasures= (ArrayList<NozzleMeasure>)fromClient.readObject();
-                                singleNozzleMeasure = nozzleMeasures.get(0);
-                                System.out.println(singleNozzleMeasure.getMeasureDate());
+                                for (NozzleMeasure nozzleMeasure: nozzleMeasures){
+                                    genericList.add((BaseClass)nozzleMeasure);
+                                }
                                 break;
                         }
+                        DataGrouper dataGrouper = new DataGrouper();
+                        BaseClass[] groupedBlock = dataGrouper.createGroupedDataBlock(genericList);
+                        MaskModule maskModule = new MaskModule();
+                        maskModule.getDividedDataBlock(new ArrayList<>(Arrays.asList(groupedBlock)));
+
 
                     }
                     catch (EOFException exc) {

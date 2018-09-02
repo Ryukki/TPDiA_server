@@ -1,5 +1,6 @@
 package logics;
 
+import entities.BaseClass;
 import entities.TankMeasure;
 
 import java.util.ArrayList;
@@ -14,16 +15,16 @@ public class DataGrouper {
 
     private Map<Integer, Integer> tablicaLiczebnosci;
     private List<Integer> tablicaPozycji;
-    private Map<Integer, Integer> tablicaIndeksowTankMeasures;
+    private Map<Integer, Integer> tablicaIndeksow;
 
-    private void createTankStatistics(List<TankMeasure> tankMeasureList){
+    private void createStatistics(List<BaseClass> dataList){
         tablicaLiczebnosci = new HashMap<>();
         tablicaPozycji = new ArrayList<>();
-        tablicaIndeksowTankMeasures = new HashMap<>();
+        tablicaIndeksow = new HashMap<>();
 
-        for(TankMeasure tankMeasure: tankMeasureList){
+        for(BaseClass baseClass: dataList){
             Integer licznik = 0;
-            Integer id = tankMeasure.getTankId();
+            Integer id = baseClass.getTankId();
             if(!tablicaLiczebnosci.containsKey(id)){
                 tablicaLiczebnosci.put(id, licznik);
             }else{
@@ -33,22 +34,22 @@ public class DataGrouper {
             tablicaPozycji.add(licznik);
         }
         int index = 0;
-        for(TankMeasure tankMeasure: tankMeasureList){
-            Integer id = tankMeasure.getTankId();
-            if(!tablicaIndeksowTankMeasures.containsKey(id)){
-                tablicaIndeksowTankMeasures.put(id, index);
+        for(BaseClass baseClass: dataList){
+            Integer id = baseClass.getTankId();
+            if(!tablicaIndeksow.containsKey(id)){
+                tablicaIndeksow.put(id, index);
                 index += tablicaLiczebnosci.get(id) + 1;
             }
         }
     }
 
-    public TankMeasure[] createGroupedDataBlockTankMeasures(List<TankMeasure> tankMeasureList){
-        createTankStatistics(tankMeasureList);
-        TankMeasure[] groupedDataBlock = new TankMeasure[tankMeasureList.size()];
-        for(int i = 0; i < tankMeasureList.size(); i++){
-            TankMeasure tankMeasure = tankMeasureList.get(i);
-            int newIndex = tablicaIndeksowTankMeasures.get(tankMeasure.getTankId()) + tablicaPozycji.get(i);
-            groupedDataBlock[newIndex] = tankMeasureList.get(i);
+    public BaseClass[] createGroupedDataBlock(List<BaseClass> dataList){
+        createStatistics(dataList);
+        BaseClass[] groupedDataBlock = new BaseClass[dataList.size()];
+        for(int i = 0; i < dataList.size(); i++){
+            BaseClass baseClass = dataList.get(i);
+            int newIndex = tablicaIndeksow.get(baseClass.getTankId()) + tablicaPozycji.get(i);
+            groupedDataBlock[newIndex] = dataList.get(i);
         }
 
         return groupedDataBlock;
@@ -62,8 +63,8 @@ public class DataGrouper {
         return tablicaPozycji;
     }
 
-    public Map<Integer, Integer> getTablicaIndeksowTankMeasures() {
-        return tablicaIndeksowTankMeasures;
+    public Map<Integer, Integer> getTablicaIndeksow() {
+        return tablicaIndeksow;
     }
 }
 /**

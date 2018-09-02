@@ -1,5 +1,6 @@
 package logics;
 
+import entities.BaseClass;
 import entities.TankMeasure;
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
@@ -16,26 +17,26 @@ public class MaskModule {
     private int numberOfColumns;
 
 
-    public void getDividedDataBlock(List<TankMeasure> groupedTankMeasureBlock){
-        createTankMeasureDifferenceBlock(groupedTankMeasureBlock);
+    public void getDividedDataBlock(List<BaseClass> groupedBlock){
+        createDifferenceBlock(groupedBlock);
         generateIDMask();
     }
 
-    private void createTankMeasureDifferenceBlock(List<TankMeasure> groupedTankMeasureBlock){
+    private void createDifferenceBlock(List<BaseClass> groupedBlock){
         tankMeasureDifferenceBlock = new HashMap<>();
         int id = -1;
         Date lastDate = null;
         ArrayList<Long> tempArray = new ArrayList<>();
-        for(TankMeasure tankMeasure: groupedTankMeasureBlock){
-            if(id!=tankMeasure.getTankId()){
+        for(BaseClass baseClass: groupedBlock){
+            if(id!=baseClass.getTankId()){
                 if(!tempArray.isEmpty()){
                     tankMeasureDifferenceBlock.put(id, tempArray);
                 }
-                id = tankMeasure.getTankId();
+                id = baseClass.getTankId();
                 tempArray = new ArrayList<>();
-                lastDate = tankMeasure.getMeasureDate();
+                lastDate = baseClass.getMeasureDate();
             }else {
-                Long dateDifference = Math.abs(tankMeasure.getMeasureDate().getTime() - lastDate.getTime());
+                Long dateDifference = Math.abs(baseClass.getMeasureDate().getTime() - lastDate.getTime());
                 tempArray.add(dateDifference);
             }
         }
@@ -65,6 +66,7 @@ public class MaskModule {
     private void generateTimeMask(){
         double[][] matrixData;
         int numberOfRows = 0;
+        //TODO number of rows
 
         matrixData = new double[numberOfRows][numberOfColumns];
         timeMask = MatrixUtils.createRealMatrix(matrixData);
