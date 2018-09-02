@@ -1,8 +1,9 @@
 package logics;
 
 import entities.TankMeasure;
+import org.apache.commons.math3.linear.MatrixUtils;
+import org.apache.commons.math3.linear.RealMatrix;
 
-import java.time.Duration;
 import java.util.*;
 
 /**
@@ -10,10 +11,17 @@ import java.util.*;
  */
 public class MaskModule {
     private Map<Integer, ArrayList<Long>> tankMeasureDifferenceBlock;
-    private Integer[] IDMask;
-    private Integer[] timeMask;
+    private RealMatrix IDMask;
+    private RealMatrix timeMask;
+    private int numberOfColumns;
 
-    private void createTankMeasureDifferenceBlock(List<TankMeasure> groupedTankMeasureBlock, Map<Integer, Integer> tablicaLiczebnosci){
+
+    public void getDividedDataBlock(List<TankMeasure> groupedTankMeasureBlock){
+        createTankMeasureDifferenceBlock(groupedTankMeasureBlock);
+        generateIDMask();
+    }
+
+    private void createTankMeasureDifferenceBlock(List<TankMeasure> groupedTankMeasureBlock){
         tankMeasureDifferenceBlock = new HashMap<>();
         int id = -1;
         Date lastDate = null;
@@ -26,7 +34,6 @@ public class MaskModule {
                 id = tankMeasure.getTankId();
                 tempArray = new ArrayList<>();
                 lastDate = tankMeasure.getMeasureDate();
-
             }else {
                 Long dateDifference = Math.abs(tankMeasure.getMeasureDate().getTime() - lastDate.getTime());
                 tempArray.add(dateDifference);
@@ -35,7 +42,31 @@ public class MaskModule {
         tankMeasureDifferenceBlock.put(id, tempArray);
     }
 
-    public void getDividedDataBlock(List<TankMeasure> groupedTankMeasureBlock, Map<Integer, Integer> tablicaLiczebnosci){
-        createTankMeasureDifferenceBlock(groupedTankMeasureBlock, tablicaLiczebnosci);
+    private void generateIDMask(){
+        double[][] matrixData;
+
+        numberOfColumns = 0;
+        int numberOfRows = tankMeasureDifferenceBlock.entrySet().size();
+        for(Map.Entry<Integer, ArrayList<Long>> differences: tankMeasureDifferenceBlock.entrySet()){
+            numberOfColumns+=differences.getValue().size();
+        }
+        matrixData = new double[numberOfRows][numberOfColumns];
+        int row = 0, column = 0;
+        for(Map.Entry<Integer, ArrayList<Long>> differences: tankMeasureDifferenceBlock.entrySet()){
+            for(Long timeDifference: differences.getValue()){
+                matrixData[row][column++] = 1;
+            }
+            row++;
+        }
+
+        IDMask = MatrixUtils.createRealMatrix(matrixData);
+    }
+
+    private void generateTimeMask(){
+        double[][] matrixData;
+        int numberOfRows = 0;
+
+        matrixData = new double[numberOfRows][numberOfColumns];
+        timeMask = MatrixUtils.createRealMatrix(matrixData);
     }
 }

@@ -37,7 +37,7 @@ public class DataGrouper {
             Integer id = tankMeasure.getTankId();
             if(!tablicaIndeksowTankMeasures.containsKey(id)){
                 tablicaIndeksowTankMeasures.put(id, index);
-                index += tablicaLiczebnosci.get(id);
+                index += tablicaLiczebnosci.get(id) + 1;
             }
         }
     }

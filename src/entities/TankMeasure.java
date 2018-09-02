@@ -7,20 +7,14 @@ import java.util.Date;
 /**
  * Created by Ryukki on 03.07.2018.
  */
-public class TankMeasure implements Serializable{
-    private Date measureDate;
+public class TankMeasure extends BaseClass implements Serializable {
     private Integer locationId;//always empty
     private Integer meterId;//always empty
-    private Integer tankId;
     private Integer fuelHeight;//always zero
     private Double fuelVolume;
     private Integer fuelTemperature;
     private Integer waterHeight;//always empty
     private Integer waterVolume;//always empty
-
-    public Date getMeasureDate() {
-        return measureDate;
-    }
 
     public Integer getLocationId() {
         return locationId;
@@ -28,10 +22,6 @@ public class TankMeasure implements Serializable{
 
     public Integer getMeterId() {
         return meterId;
-    }
-
-    public Integer getTankId() {
-        return tankId;
     }
 
     public Integer getFuelHeight() {
@@ -54,20 +44,12 @@ public class TankMeasure implements Serializable{
         return waterVolume;
     }
 
-    public void setMeasureDate(Date measureDate) {
-        this.measureDate = measureDate;
-    }
-
     public void setLocationId(Integer locationId) {
         this.locationId = locationId;
     }
 
     public void setMeterId(Integer meterId) {
         this.meterId = meterId;
-    }
-
-    public void setTankId(Integer tankId) {
-        this.tankId = tankId;
     }
 
     public void setFuelHeight(Integer fuelHeight) {

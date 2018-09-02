@@ -54,7 +54,7 @@ public class Main {
                                 DataGrouper dataGrouper = new DataGrouper();
                                 TankMeasure[] groupedBlock = dataGrouper.createGroupedDataBlockTankMeasures(tankMeasures);
                                 MaskModule maskModule = new MaskModule();
-                                maskModule.getDividedDataBlock(new ArrayList<>(Arrays.asList(groupedBlock)), dataGrouper.getTablicaLiczebnosci());
+                                maskModule.getDividedDataBlock(new ArrayList<>(Arrays.asList(groupedBlock)));
 
                                 break;
 
