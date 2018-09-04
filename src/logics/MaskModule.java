@@ -60,6 +60,10 @@ public class MaskModule {
             row++;
         }
 
+        System.out.println(row);
+        System.out.println(column);
+
+
         IDMask = MatrixUtils.createRealMatrix(matrixData);
     }
 
