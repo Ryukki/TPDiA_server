@@ -61,7 +61,6 @@ public class SumBlock {
                 tank = tankHashMap.get(baseClass.getTankId());
                 tank.setVolumeAfterRefuel(((Refuel)baseClass).getFuelVolume() + tank.getCurrentFuelVolume());
                 tank.setTempCounter(((Refuel)baseClass).getFuelVolume() + tank.getTempCounter());
-                System.out.println("Napełniony zbiornik nr: " + tank.getId());
             }
         }
         generateReport(groupedBlock.get(groupedBlock.size()-1).getMeasureDate());
@@ -83,7 +82,7 @@ public class SumBlock {
             }
 
             tank.setPumpedOutVolume(temp);
-            tank.setBalance(Math.abs(tank.getTempCounter() - tank.getCurrentFuelVolume() - tank.getPumpedOutVolume()));
+            tank.setBalance((tank.getTempCounter() - tank.getCurrentFuelVolume()) - tank.getPumpedOutVolume());
 
             System.out.println("Paliwo wypompowane ze zbiornika nr "+ tank.getId() + " : "+ tank.getPumpedOutVolume());
             System.out.println("Przebieg zbiornika "+ tank.getId() + " : "+ tank.getTempCounter());
