@@ -1,22 +1,19 @@
-import entities.BaseClass;
-import entities.NozzleMeasure;
-import entities.Refuel;
-import entities.TankMeasure;
+import entities.*;
 import logics.DataGrouper;
-import logics.MaskModule;
+import logics.SumBlock;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class Main {
 
-
     public static void main(String[] args) {
-
+        HashMap<Integer, Tank> tankHashMap;
         int port = 6868;
 
         try (ServerSocket serverSocket = new ServerSocket(port)) {
@@ -25,6 +22,9 @@ public class Main {
             List<TankMeasure> tankMeasures;
             List<Refuel> refuelList;
             List<BaseClass> genericList;
+
+            tankHashMap = new HashMap<>();
+            SumBlock sumBlock = new SumBlock(tankHashMap);
 
             String dataHeader;
 
@@ -68,8 +68,8 @@ public class Main {
                         }
                         DataGrouper dataGrouper = new DataGrouper();
                         BaseClass[] groupedBlock = dataGrouper.createGroupedDataBlock(genericList);
-                        MaskModule maskModule = new MaskModule();
-                        maskModule.getDividedDataBlock(new ArrayList<>(Arrays.asList(groupedBlock)));
+                        sumBlock.saveValues(new ArrayList<>(Arrays.asList(groupedBlock)));
+
 
 
                     }
