@@ -69,10 +69,6 @@ public class Main {
                         DataGrouper dataGrouper = new DataGrouper();
                         BaseClass[] groupedBlock = dataGrouper.createGroupedDataBlock(genericList);
                         sumBlock.saveValues(new ArrayList<>(Arrays.asList(groupedBlock)));
-<<<<<<< HEAD
-=======
-
->>>>>>> 4b9027ea12d42c61654a8c4570d96c33bd544265
 
 
                     }

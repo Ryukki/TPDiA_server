@@ -1,10 +1,6 @@
 package entities;
 
 import java.util.HashMap;
-<<<<<<< HEAD
-=======
-import java.util.List;
->>>>>>> 4b9027ea12d42c61654a8c4570d96c33bd544265
 
 /**
  * Created by kacper on 2018-09-04.
@@ -12,7 +8,6 @@ import java.util.List;
 public class Tank {
     private int id;
     private HashMap<Integer, Pistol> pistols;
-<<<<<<< HEAD
     private double currentFuelVolume; //ilość paliwa z danych TankMeasure
     private double tempCounter; /** licznik pomocniczy, który przechowuje wartość tzw. przebiegu?? zbiornika, suma ilości litrów paliwa
                                 która się w nim znajdowała*/
@@ -20,10 +15,6 @@ public class Tank {
     private double pumpedOutVolume; //ilość paliwa wypompowana przez wszystkie pistolety z danego zbiornika
     private double balance; /**bilans pomiędzy ilością paliwa, która jest w zbiorniku,
                             a ilością która powinna się w nim znajdować */
-=======
-    private double currentFuelVolume;
-    private double pumpedOutVolume; //ilość paliwa wypompowana przez wszystkie pistolety z danego zbiornika
->>>>>>> 4b9027ea12d42c61654a8c4570d96c33bd544265
     private int fuelTemperature;
 
     public Tank() {
@@ -69,7 +60,6 @@ public class Tank {
     public void setPumpedOutVolume(double pumpedOutVolume) {
         this.pumpedOutVolume = pumpedOutVolume;
     }
-<<<<<<< HEAD
 
     public double getTempCounter() {
         return tempCounter;
@@ -94,6 +84,4 @@ public class Tank {
     public void setVolumeAfterRefuel(double volumeAfterRefuel) {
         this.volumeAfterRefuel = volumeAfterRefuel;
     }
-=======
->>>>>>> 4b9027ea12d42c61654a8c4570d96c33bd544265
 }
