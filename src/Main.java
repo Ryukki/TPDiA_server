@@ -43,32 +43,32 @@ public class Main {
                         genericList = new ArrayList<>();
                         switch (dataHeader){
                             case "tankMeasure":
-                                System.out.println("receiving tank measures...");
                                 tankMeasures= (ArrayList<TankMeasure>)fromClient.readObject();
                                 for(TankMeasure tankMeasure: tankMeasures){
                                     genericList.add((BaseClass) tankMeasure);
                                 }
+                                sumBlock.saveValues(genericList);
                                 break;
 
                             case "refuel":
-                                System.out.println("receiving refuel data...");
                                 refuelList= (ArrayList<Refuel>)fromClient.readObject();
                                 for(Refuel refuel: refuelList){
                                     genericList.add((BaseClass)refuel);
                                 }
+                                sumBlock.saveValues(genericList);
                                 break;
 
                             case "nozzleMeasure":
-                                System.out.println("receiving nozzle measures...");
                                 nozzleMeasures= (ArrayList<NozzleMeasure>)fromClient.readObject();
                                 for (NozzleMeasure nozzleMeasure: nozzleMeasures){
                                     genericList.add((BaseClass)nozzleMeasure);
                                 }
+                                sumBlock.saveValues(genericList);
+                                sumBlock.generateReport(genericList.get(0).getMeasureDate());
                                 break;
                         }
-                        DataGrouper dataGrouper = new DataGrouper();
-                        BaseClass[] groupedBlock = dataGrouper.createGroupedDataBlock(genericList);
-                        sumBlock.saveValues(new ArrayList<>(Arrays.asList(groupedBlock)));
+//                        DataGrouper dataGrouper = new DataGrouper();
+//                        BaseClass[] groupedBlock = dataGrouper.createGroupedDataBlock(genericList);
 
 
                     }

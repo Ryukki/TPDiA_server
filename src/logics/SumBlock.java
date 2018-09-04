@@ -63,7 +63,6 @@ public class SumBlock {
                 tank.setTempCounter(((Refuel)baseClass).getFuelVolume() + tank.getTempCounter());
             }
         }
-        generateReport(groupedBlock.get(groupedBlock.size()-1).getMeasureDate());
     }
 
     public void generateReport(Date measureDate){
@@ -72,7 +71,6 @@ public class SumBlock {
         System.out.println("Raport na chwilę " + measureDate.toString());
 
         for(Map.Entry<Integer, Tank> tankEntry : tankHashMap.entrySet()) {
-            Integer key = tankEntry.getKey();
             Tank tank = tankEntry.getValue();
             HashMap<Integer, Pistol> pistols = tank.getPistols();
 
@@ -87,7 +85,8 @@ public class SumBlock {
             System.out.println("Paliwo wypompowane ze zbiornika nr "+ tank.getId() + " : "+ tank.getPumpedOutVolume());
             System.out.println("Przebieg zbiornika "+ tank.getId() + " : "+ tank.getTempCounter());
             System.out.println("W zbiorniku nr "+ tank.getId() + " pozostała ilość paliwa: "+ tank.getCurrentFuelVolume());
-            System.out.println("Wartość bilansu: " + tank.getBalance());
+            System.out.println("Wartość bilansu dla zbiornika nr " + tank.getId() + " : " + tank.getBalance());
+            System.out.println();
 
             temp = 0.0;
         }
