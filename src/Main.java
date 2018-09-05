@@ -5,10 +5,8 @@ import logics.SumBlock;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class Main {
 
@@ -18,13 +16,13 @@ public class Main {
 
         try (ServerSocket serverSocket = new ServerSocket(port)) {
 
-            List<NozzleMeasure> nozzleMeasures;
-            List<TankMeasure> tankMeasures;
-            List<Refuel> refuelList;
-            List<BaseClass> genericList;
+            AllMeasures allMeasures;
+            Map<Integer, AllMeasures> allMeasuresDividedByTank;
+            Map<Integer, Future<Tank>> tankFutureMap = new HashMap<>();
+            ExecutorService executor = Executors.newCachedThreadPool();
 
             tankHashMap = new HashMap<>();
-            SumBlock sumBlock = new SumBlock(tankHashMap);
+            DataGrouper dataGrouper = new DataGrouper();
 
             String dataHeader;
 
@@ -40,40 +38,28 @@ public class Main {
                 for (;;) {
                     try {
                         dataHeader = (String)fromClient.readObject();
-                        genericList = new ArrayList<>();
-                        switch (dataHeader){
-                            case "tankMeasure":
-                                tankMeasures= (ArrayList<TankMeasure>)fromClient.readObject();
-                                for(TankMeasure tankMeasure: tankMeasures){
-                                    genericList.add((BaseClass) tankMeasure);
+                        if(dataHeader.equals("allMeasures")){
+                            allMeasures = (AllMeasures)fromClient.readObject();
+                            allMeasuresDividedByTank = dataGrouper.groupMeasuresByTankId(allMeasures);
+                            for (Map.Entry<Integer, AllMeasures> dividedMeasure: allMeasuresDividedByTank.entrySet()){
+                                Integer tankId = dividedMeasure.getKey();
+                                Future<Tank> tankFuture;
+                                if(!tankFutureMap.containsKey(tankId)){
+                                    tankFuture = executor.submit(new SumBlock(tankHashMap.get(tankId), dividedMeasure.getValue()));
+                                    tankFutureMap.put(tankId, tankFuture);
+                                }else {
+                                    tankFuture = tankFutureMap.get(tankId);
+                                    tankHashMap.put(tankId, tankFuture.get());
+                                    tankFuture = executor.submit(new  SumBlock(tankHashMap.get(tankId), dividedMeasure.getValue()));
+                                    tankFutureMap.put(tankId, tankFuture);
                                 }
-                                sumBlock.saveValues(genericList);
-                                break;
-
-                            case "refuel":
-                                refuelList= (ArrayList<Refuel>)fromClient.readObject();
-                                for(Refuel refuel: refuelList){
-                                    genericList.add((BaseClass)refuel);
-                                }
-                                sumBlock.saveValues(genericList);
-                                break;
-
-                            case "nozzleMeasure":
-                                nozzleMeasures= (ArrayList<NozzleMeasure>)fromClient.readObject();
-                                for (NozzleMeasure nozzleMeasure: nozzleMeasures){
-                                    genericList.add((BaseClass)nozzleMeasure);
-                                }
-                                sumBlock.saveValues(genericList);
-                                sumBlock.generateReport(genericList.get(0).getMeasureDate());
-                                break;
+                            }
                         }
-//                        DataGrouper dataGrouper = new DataGrouper();
-//                        BaseClass[] groupedBlock = dataGrouper.createGroupedDataBlock(genericList);
-
-
-                    }
+                        }
                     catch (EOFException exc) {
                         break;
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
                     }
                 }
             }
