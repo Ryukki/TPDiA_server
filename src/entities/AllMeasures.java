@@ -1,15 +1,16 @@
 package entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Ryukki on 05.09.2018.
  */
 public class AllMeasures implements Serializable {
-    private List<NozzleMeasure> nozzleMeasures;
-    private List<TankMeasure> tankMeasures;
-    private List<Refuel> refuels;
+    private List<NozzleMeasure> nozzleMeasures = new ArrayList<>();
+    private List<TankMeasure> tankMeasures = new ArrayList<>();
+    private List<Refuel> refuels = new ArrayList<>();
 
     public List<NozzleMeasure> getNozzleMeasures() {
         return nozzleMeasures;
