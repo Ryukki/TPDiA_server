@@ -8,23 +8,21 @@ import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.*;
 
+import static java.lang.Thread.sleep;
+
 public class Main {
 
+    static HashMap<Integer, Tank> tankHashMap;
+
     public static void main(String[] args) {
-        HashMap<Integer, Tank> tankHashMap;
         int port = 6868;
 
         try (ServerSocket serverSocket = new ServerSocket(port)) {
 
             AllMeasures allMeasures;
-            Map<Integer, AllMeasures> allMeasuresDividedByTank;
-            Map<Integer, Future<Tank>> tankFutureMap = new HashMap<>();
-            ExecutorService executor = Executors.newCachedThreadPool();
-
-            tankHashMap = new HashMap<>();
-            DataGrouper dataGrouper = new DataGrouper();
 
             String dataHeader;
+            boolean firstFunctionalMeasures = false;
 
             System.out.println("Server is listening on port " + port);
 
@@ -40,26 +38,18 @@ public class Main {
                         dataHeader = (String)fromClient.readObject();
                         if(dataHeader.equals("allMeasures")){
                             allMeasures = (AllMeasures)fromClient.readObject();
-                            allMeasuresDividedByTank = dataGrouper.groupMeasuresByTankId(allMeasures);
-                            for (Map.Entry<Integer, AllMeasures> dividedMeasure: allMeasuresDividedByTank.entrySet()){
-                                Integer tankId = dividedMeasure.getKey();
-                                Future<Tank> tankFuture;
-                                if(!tankFutureMap.containsKey(tankId)){
-                                    tankFuture = executor.submit(new SumBlock(tankHashMap.get(tankId), dividedMeasure.getValue()));
-                                    tankFutureMap.put(tankId, tankFuture);
-                                }else {
-                                    tankFuture = tankFutureMap.get(tankId);
-                                    tankHashMap.put(tankId, tankFuture.get());
-                                    tankFuture = executor.submit(new  SumBlock(tankHashMap.get(tankId), dividedMeasure.getValue()));
-                                    tankFutureMap.put(tankId, tankFuture);
-                                }
+                            if(firstFunctionalMeasures){
+                                processAllMeasures(allMeasures);
+                            }else if (!allMeasures.getTankMeasures().isEmpty()){
+                                firstFunctionalMeasures=true;
+                                processAllMeasures(allMeasures);
                             }
+
+
                         }
                         }
                     catch (EOFException exc) {
                         break;
-                    } catch (InterruptedException | ExecutionException e) {
-                        e.printStackTrace();
                     }
                 }
             }
@@ -69,6 +59,35 @@ public class Main {
             ex.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void processAllMeasures(AllMeasures allMeasures){
+        Map<Integer, AllMeasures> allMeasuresDividedByTank;
+        Map<Integer, Future<Tank>> tankFutureMap = new HashMap<>();
+        ExecutorService executor = Executors.newCachedThreadPool();
+
+        tankHashMap = new HashMap<>();
+        DataGrouper dataGrouper = new DataGrouper();
+        allMeasuresDividedByTank = dataGrouper.groupMeasuresByTankId(allMeasures);
+        for (Map.Entry<Integer, AllMeasures> dividedMeasure: allMeasuresDividedByTank.entrySet()){
+            Integer tankId = dividedMeasure.getKey();
+            Future<Tank> tankFuture;
+            if(!tankFutureMap.containsKey(tankId)){
+                tankFuture = executor.submit(new SumBlock(tankHashMap.get(tankId), dividedMeasure.getValue()));
+                tankFutureMap.put(tankId, tankFuture);
+            }else {
+                tankFuture = tankFutureMap.get(tankId);
+                try {
+                    tankHashMap.put(tankId, tankFuture.get());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+                tankFuture = executor.submit(new  SumBlock(tankHashMap.get(tankId), dividedMeasure.getValue()));
+                tankFutureMap.put(tankId, tankFuture);
+            }
         }
     }
 }

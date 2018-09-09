@@ -36,7 +36,6 @@ public class SumBlock implements Callable<Tank>{
         if (tank == null) {
             tank = new Tank();
             tank.setTempCounter(allMeasures.getTankMeasures().get(0).getFuelVolume());  //ustawienie początkowej wartości ilości paliwa - wymaga żeby pierwsze przesłąne dane miały tankMeasure
-            //TODO wysypuje się jeśli w pierwszym przesłanym pomiarze nie ma tankMeasure - można spokojnie to sprawdzać ale trzeba w jakiś sposób ustalać tą wartość (albo ją jakoś unieważnić)
             tank.setId(allMeasures.getNozzleMeasures().get(0).getTankId());
         }
         for (TankMeasure tankMeasure : allMeasures.getTankMeasures()) {
